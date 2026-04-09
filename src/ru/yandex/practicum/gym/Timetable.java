@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Timetable {
 
-    private HashMap<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable;
+    private Map<DayOfWeek, Map<TimeOfDay, List<TrainingSession>>> timetable;
 
     public Timetable() {
         this.timetable = new HashMap<>();
@@ -15,7 +15,7 @@ public class Timetable {
         TimeOfDay time = trainingSession.getTimeOfDay();
 
         timetable.putIfAbsent(day, new TreeMap<>());
-        TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(day);
+        Map<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(day);
 
         daySchedule.putIfAbsent(time, new ArrayList<>());
         daySchedule.get(time).add(trainingSession);//сохраняем занятие в расписании
@@ -23,28 +23,28 @@ public class Timetable {
 
     public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
         List<TrainingSession> result = new ArrayList<>();
-        TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(dayOfWeek);
+        Map<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(dayOfWeek);
 
         if (daySchedule != null) {
             for (List<TrainingSession> session : daySchedule.values()) {
                 result.addAll(session);
             }
         }
-        return result; //как реализовать, тоже непонятно, но сложность должна быть О(1)
+        return result;
     }
 
     public List<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
-        TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(dayOfWeek);
+        Map<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(dayOfWeek);
         if (daySchedule == null) {
-            return new ArrayList<>();
+            return List.of();
         }
         List<TrainingSession> sessions = daySchedule.get(timeOfDay);
-        return sessions != null ? new ArrayList<>(sessions) : new ArrayList<>();//как реализовать, тоже непонятно, но сложность должна быть О(1)
+        return sessions != null ? new ArrayList<>(sessions) : new ArrayList<>();
     }
 
     public Map<Coach, Integer> getCountByCoaches() {
         Map<Coach, Integer> coachCounts = new HashMap<>();
-        for (TreeMap<TimeOfDay, List<TrainingSession>> daySchedule : timetable.values()) {
+        for (Map<TimeOfDay, List<TrainingSession>> daySchedule : timetable.values()) {
             for (List<TrainingSession> sessions : daySchedule.values()) {
                 for (TrainingSession session : sessions) {
                     Coach coach = session.getCoach();
